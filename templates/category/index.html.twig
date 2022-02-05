@@ -14,6 +14,8 @@
         {% else %}
         Pas de catégories
         {% endfor %}
-        <a href="{{ path('category_new') }}">New</a>
+        <a href="{{ path('category_new') }}">
+            <button class="btn btn-dark">New</button>
+        </a>
     </ul>
 {% endblock %}

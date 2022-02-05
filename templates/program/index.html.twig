@@ -15,5 +15,11 @@
     {% endfor %}
 
     <div><a href="{{ path('app_index') }}">Retour à l'acceuil</a></div>
-    <div><a href="{{ path('program_new') }}"><i class="fas fa-plus"></i></a></div>
+    <div>
+        <a href="{{ path('program_new') }}">
+            <button class="btn btn-dark">
+                <i class="fas fa-plus"></i>
+            </button>
+        </a>
+    </div>
 {% endblock %}

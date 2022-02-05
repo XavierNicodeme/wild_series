@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Episode;
 use App\Entity\Program;
 use App\Entity\Season;
+use App\Form\CategoryType;
 use App\Form\ProgramType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -84,6 +85,25 @@ class ProgramController extends AbstractController
             'season' => $season,
             'episode' => $episode
             ]);
+    }
+    /**
+     * @Route("/{id}/edit", name="edit")
+     */
+    public function edit(Program $program, Request $request, ManagerRegistry $managerRegistry): Response
+    {
+        $form = $this->createForm(ProgramType::class, $program);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $managerRegistry->getManager()->flush();
+
+            return $this->redirectToRoute('program_index');
+        }
+
+        return $this->renderForm('program/edit.html.twig', [
+            'form'    => $form,
+            'program' => $program,
+        ]);
+
     }
 
 }
