@@ -35,17 +35,6 @@ class ProgramController extends AbstractController
      */
     public function new(Request $request, ManagerRegistry $managerRegistry): Response
     {
-        $pass = '4C6520666C6167206465206365206368616C6C656E6765206573743A203261633337363438316165353436636436383964356239313237356433323465';
-        $arr=str_split($pass);
-        $word = '';
-        $test = ord($pass);
-        foreach($arr as $let) {
-            if(ctype_alpha($let)) {
-                $word .= $let;
-            }
-        }
-        dd($word,$test);
-
         $program = new Program();
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);

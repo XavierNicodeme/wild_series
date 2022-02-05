@@ -80,6 +80,27 @@ class CategoryController extends AbstractController
             'programs' => $programs,
         ]);
     }
+    /**
+     * @Route("/{categoryName}/edit", name="edit")
+     */
+    public function edit(string $categoryName, ManagerRegistry $managerRegistry, Request $request): Response
+    {
+        $category = $managerRegistry
+            ->getRepository(Category::class)
+            ->findOneBy([
+                'name' => $categoryName
+            ]);
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $managerRegistry->getManager()->flush();
 
+            return $this->redirectToRoute('category_index');
+        }
+        return $this->renderForm('category/edit.html.twig', [
+            'category' => $category,
+            'form' => $form,
+        ]);
+    }
 }
