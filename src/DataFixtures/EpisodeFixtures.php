@@ -48,7 +48,7 @@ class EpisodeFixtures extends Fixture implements DependentFixtureInterface
             $episode->setTitle($epInfo['title'] . $number);
             $slug = $this->slugify->generate($episode->getTitle());
             $episode->setSlug($slug);
-            $episode->setSynopsis($epInfo['synopsis'] . $number);
+            $episode->setSynopsis($epInfo['synopsis'] . ' ' . $number);
             for ($i = 1; $i <= count(SeasonFixtures::SEASONS); $i ++) {
                 $episode->setSeason($this->getReference('season_' . $i));
             }

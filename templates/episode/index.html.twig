@@ -4,13 +4,13 @@
 
 {% block body %}
     <h1>Episode index</h1>
-
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Title</th>
                 <th>Number</th>
+                <th>Title</th>
+                <th>Saison</th>
+                <th>Série</th>
                 <th>Synopsis</th>
                 <th>actions</th>
             </tr>
@@ -18,9 +18,10 @@
         <tbody>
         {% for episode in episodes %}
             <tr>
-                <td>{{ episode.id }}</td>
-                <td>{{ episode.title }}</td>
                 <td>{{ episode.number }}</td>
+                <td>{{ episode.title }}</td>
+                <td>{{ episode.season.number }}</td>
+                <td>{{ episode.season.program.title }}</td>
                 <td>{{ episode.synopsis }}</td>
                 <td>
                     <a href="{{ path('episode_show', {'slug': episode.slug}) }}">show</a>
