@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Entity\Program;
 use App\Form\CategoryType;
+use App\Service\Slugify;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,12 +34,14 @@ class CategoryController extends AbstractController
     /**
      * @Route("/new", name="new")
      */
-    public function new(Request $request, ManagerRegistry $managerRegistry): Response
+    public function new(Request $request, ManagerRegistry $managerRegistry, Slugify $slugify): Response
     {
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $slug = $slugify->generate($category->getName());
+            $category->setSlug($slug);
             $entityManager = $managerRegistry->getManager();
             $entityManager->persist($category);
             $entityManager->flush();
