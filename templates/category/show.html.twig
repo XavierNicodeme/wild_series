@@ -9,7 +9,7 @@
         <div class="media d-flex">
             <div class="media-body">
                 {% for program in programs %}
-                    <p>{{ program.id }} - <a href="{{ path('program_show',{id: program.id}) }}">{{ program.title }}</a></p>
+                    <p>{{ program.id }} - <a href="{{ path('program_show',{slug: program.slug}) }}">{{ program.title }}</a></p>
                     <p>Résumé : {{ program.summary }}</p>
                 {% endfor %}
             </div>
@@ -20,5 +20,5 @@
     <a href="{{ path('category_index') }}">
         Retour à la liste des catégories
     </a>
-    <a href="{{ path('category_edit', {categoryName: category.name}) }}">Editer</a>
+    <a href="{{ path('category_edit', {slug: category.slug}) }}">Editer</a>
 {% endblock %}

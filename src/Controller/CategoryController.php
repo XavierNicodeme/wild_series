@@ -52,16 +52,10 @@ class CategoryController extends AbstractController
     }
 
     /**
-     * @Route("/{categoryName}", methods={"GET"}, name="show")
+     * @Route("/{slug}", methods={"GET"}, name="show")
      */
-    public function show(string $categoryName, ManagerRegistry $managerRegistry): Response
+    public function show(Category $category, ManagerRegistry $managerRegistry): Response
     {
-        $category = $managerRegistry
-            ->getRepository(Category::class)
-            ->findOneBy([
-                'name' => $categoryName
-            ]);
-
         $programs =$managerRegistry->getRepository(Program::class)
             ->findBy(
                 ['category' => $category],
@@ -71,7 +65,7 @@ class CategoryController extends AbstractController
 
         if(!$category) {
             throw $this->createNotFoundException(
-                'No Category with '. $categoryName . ' name in the Category\'table'
+                'No Category with '. $category->getName() . ' name in the Category\'table'
             );
         }
 
@@ -81,15 +75,10 @@ class CategoryController extends AbstractController
         ]);
     }
     /**
-     * @Route("/{categoryName}/edit", name="edit")
+     * @Route("/{slug}/edit", name="edit")
      */
-    public function edit(string $categoryName, ManagerRegistry $managerRegistry, Request $request): Response
+    public function edit(Category $category, ManagerRegistry $managerRegistry, Request $request): Response
     {
-        $category = $managerRegistry
-            ->getRepository(Category::class)
-            ->findOneBy([
-                'name' => $categoryName
-            ]);
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
 

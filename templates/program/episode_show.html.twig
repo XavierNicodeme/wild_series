@@ -4,5 +4,5 @@
     <h4>Episode {{ episode.number }} de la Saison {{ season.number }}</h4>
     <h5>Titre : {{ episode.title }}</h5>
     <p>Synopsis : {{ episode.synopsis }}</p>
-    <a href="{{ path("program_season_show", { program: program.id, season: season.id}) }}">Retour</a>
+    <a href="{{ path("program_season_show", { slug: program.slug, season: season.id}) }}">Retour</a>
 {% endblock %}

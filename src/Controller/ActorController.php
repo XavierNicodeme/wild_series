@@ -9,10 +9,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/actor", name="actor_")
+ */
 class ActorController extends AbstractController
 {
     /**
-     * @Route("/actor", name="actor")
+     * @Route("/", name="index")
      */
     public function index(ManagerRegistry $managerRegistry): Response
     {
@@ -24,7 +27,7 @@ class ActorController extends AbstractController
     }
 
     /**
-     * @Route("/actor/{id}", name="actor_show")
+     * @Route("/{slug}", name="show")
      */
     public function show(Actor $actor): Response
     {

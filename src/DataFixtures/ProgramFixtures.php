@@ -3,13 +3,20 @@
 namespace App\DataFixtures;
 
 use App\Entity\Program;
+use App\Service\Slugify;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 class ProgramFixtures extends Fixture implements DependentFixtureInterface
 {
-    
+    public Slugify $slugify;
+
+    public function __construct(Slugify $slugify)
+    {
+        $this->slugify = $slugify;
+    }
+
     public function load(ObjectManager $manager): void
     {
         $program = new Program();
@@ -20,6 +27,8 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
         for($i = 0; $i < count(ActorFixtures::ACTORS); $i++) {
             $program->addActor($this->getReference('actor_' . $i));
         }
+        $slug = $this->slugify->generate($program->getTitle());
+        $program->setSlug($slug);
         $manager->persist($program);
         $manager->flush();
         $this->addReference('program', $program);

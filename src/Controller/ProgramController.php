@@ -7,7 +7,9 @@ use App\Entity\Program;
 use App\Entity\Season;
 use App\Form\CategoryType;
 use App\Form\ProgramType;
+use App\Service\Slugify;
 use Doctrine\Persistence\ManagerRegistry;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,9 +36,11 @@ class ProgramController extends AbstractController
     /**
      * @Route("/new", name="new")
      */
-    public function new(Request $request, ManagerRegistry $managerRegistry): Response
+    public function new(Request $request, ManagerRegistry $managerRegistry, Slugify $slugify): Response
     {
         $program = new Program();
+        $slug = $slugify->generate($program->getTitle());
+        $program->setSlug($slug);
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -52,7 +56,7 @@ class ProgramController extends AbstractController
         ]);
     }
     /**
-     * @Route("/{id}", requirements={"id"="\d+"}, methods={"GET"}, name="show")
+     * @Route("/{slug}", methods={"GET"}, name="show")
      */
     public function show(Program $program)
     {
@@ -62,7 +66,8 @@ class ProgramController extends AbstractController
     }
 
     /**
-     * @Route("/{program}/seasons/{season}", requirements={"season"="\d+"}, methods={"GET"}, name="season_show")
+     * @Route("/{slug}/seasons/{season}", requirements={"season"="\d+"}, methods={"GET"}, name="season_show")
+     * @ParamConverter("program", options={"mapping": {"slug": "slug"}})
      */
 
     public function showSeason(Program $program, Season $season): Response
@@ -75,7 +80,8 @@ class ProgramController extends AbstractController
     }
 
     /**
-     * @Route("/{program}/season/{season}/episode/{episode}", requirements={"episode"="\d+"}, methods={"GET"}, name="episode_show")
+     * @Route("/{slug}/season/{season}/episode/{episode}", requirements={"episode"="\d+"}, methods={"GET"}, name="episode_show")
+     * @ParamConverter("program", options={"mapping": {"slug": "slug"}})
      */
 
     public function showEpisode(Program $program, Season $season, Episode $episode): Response
