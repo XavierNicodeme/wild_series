@@ -3,6 +3,8 @@
 {% block title %}Episode{% endblock %}
 
 {% block body %}
+
+
     <h1>Episode</h1>
 
     <table class="table">
@@ -29,6 +31,28 @@
     <a href="{{ path('episode_index') }}">back to list</a>
 
     <a href="{{ path('episode_edit', {'slug': episode.slug}) }}">edit</a>
+    {% if episode.comments is not empty %}
+        <ul>
+        {% for comment in episode.comments %}
+            <li>comment.rate</li>
+            <li>comment.comment</li>
+            <li>comment.author.name</li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <p>Pas de commentaire</p>
+    {% endif %}
+    {% if app.user is not null %}
+        <p>Ajouter un commentaire</p>
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-dark">Envoyer</button>
+        {{ form_end(form) }}
+    {% endif %}
 
-    {{ include('episode/_delete_form.html.twig') }}
+    {% if is_granted('ROLE_ADMIN') %}
+        {{ include('episode/_delete_form.html.twig') }}
+    {% endif %}
+
+
 {% endblock %}

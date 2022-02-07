@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Episode;
+use App\Form\CommentType;
 use App\Form\EpisodeType;
 use App\Repository\EpisodeRepository;
 use App\Service\Slugify;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,12 +70,26 @@ class EpisodeController extends AbstractController
     }
 
     /**
-     * @Route("/{slug}", name="episode_show", methods={"GET"})
+     * @Route("/{slug}", name="episode_show", methods={"POST","GET"})
      */
-    public function show(Episode $episode): Response
+    public function show(Episode $episode, Request $request, ManagerRegistry $managerRegistry): Response
     {
-        return $this->render('episode/show.html.twig', [
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setEpisode($episode);
+            $comment->setAuthor($this->getUser());
+            $managerRegistry->getManager()->persist($comment);
+            $managerRegistry->getManager()->flush();
+
+            return $this->redirectToRoute('episode_show', ['slug' => $episode->getSlug()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('episode/show.html.twig', [
             'episode' => $episode,
+            'form'    => $form,
         ]);
     }
 
@@ -97,7 +114,7 @@ class EpisodeController extends AbstractController
     }
 
     /**
-     * @Route("/{slug}", name="episode_delete", methods={"POST"})
+     * @Route("/{slug}/delete", name="episode_delete", methods={"POST"})
      */
     public function delete(Request $request, Episode $episode, EntityManagerInterface $entityManager): Response
     {
