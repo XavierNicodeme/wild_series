@@ -31,22 +31,24 @@ class UserFixtures extends Fixture
 
         $contributor = new User();
         $contributor->setEmail('contributor@mail.com');
-        $contributor->setRoles(user::CONTRIBUTOR);
+        $contributor->setRoles([user::CONTRIBUTOR]);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $user,
             'password'
         );
         $contributor->setPassword($hashedPassword);
+        $this->addReference('contributor', $contributor);
         $manager->persist($contributor);
 
         $admin = new User();
         $admin->setEmail('admin@mail.com');
-        $admin->setRoles(user::ADMIN);
+        $admin->setRoles([user::ADMIN]);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $admin,
-            'adminpass',
+            'adminpass'
         );
         $admin->setPassword($hashedPassword);
+        $this->addReference('admin', $admin);
         $manager->persist($admin);
 
 

@@ -24,6 +24,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
         $program->setSummary('Des zombies envahissent la terre');
         $program->setPoster('https://fr.web.img3.acsta.net/pictures/21/04/19/14/51/5593951.jpg');
         $program->setCategory($this->getReference('category_0'));
+        $program->setOwner($this->getReference('contributor'));
         for($i = 0; $i < count(ActorFixtures::ACTORS); $i++) {
             $program->addActor($this->getReference('actor_' . $i));
         }
@@ -37,6 +38,7 @@ class ProgramFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies()
     {
         return [
+            UserFixtures::class,
             ActorFixtures::class,
             CategoryFixtures::class,
         ];

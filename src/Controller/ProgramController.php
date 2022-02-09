@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * @Route("/program", name="program_")
@@ -47,6 +48,7 @@ class ProgramController extends AbstractController
             $entityManager = $managerRegistry->getManager();
             $slug = $slugify->generate($program->getTitle());
             $program->setSlug($slug);
+            $program->setOwner($this->getUser());
             $entityManager->persist($program);
             $entityManager->flush();
 
@@ -105,23 +107,25 @@ class ProgramController extends AbstractController
             ]);
     }
     /**
-     * @Route("/{id}/edit", name="edit")
+     * @Route("/{slug}/edit", name="edit")
      */
     public function edit(Program $program, Request $request, ManagerRegistry $managerRegistry): Response
     {
-        $form = $this->createForm(ProgramType::class, $program);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $managerRegistry->getManager()->flush();
+        if (!$this->getUser() === $program->getOwner()) {
+            throw new AccessDeniedException('Only the owner can edit the program');
+        } else {
+            $form = $this->createForm(ProgramType::class, $program);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $managerRegistry->getManager()->flush();
 
-            return $this->redirectToRoute('program_index');
+                return $this->redirectToRoute('program_index');
+            }
+
+            return $this->renderForm('program/edit.html.twig', [
+                'form' => $form,
+                'program' => $program,
+            ]);
         }
-
-        return $this->renderForm('program/edit.html.twig', [
-            'form'    => $form,
-            'program' => $program,
-        ]);
-
     }
-
 }

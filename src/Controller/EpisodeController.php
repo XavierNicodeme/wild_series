@@ -6,6 +6,7 @@ use App\Entity\Comment;
 use App\Entity\Episode;
 use App\Form\CommentType;
 use App\Form\EpisodeType;
+use App\Repository\CommentRepository;
 use App\Repository\EpisodeRepository;
 use App\Service\Slugify;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * @Route("/episode")
@@ -75,21 +77,29 @@ class EpisodeController extends AbstractController
     public function show(Episode $episode, Request $request, ManagerRegistry $managerRegistry): Response
     {
         $comment = new Comment();
+        $comments = $managerRegistry->getRepository(Comment::class)->findBy([
+            'episode' => $episode,
+        ]);
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $comment->setEpisode($episode);
-            $comment->setAuthor($this->getUser());
-            $managerRegistry->getManager()->persist($comment);
-            $managerRegistry->getManager()->flush();
+            if(!$this->getUser()) {
+                throw new AccessDeniedException('Access Denied.');
+            } else {
+                $comment->setEpisode($episode);
+                $comment->setAuthor($this->getUser());
+                $managerRegistry->getManager()->persist($comment);
+                $managerRegistry->getManager()->flush();
 
-            return $this->redirectToRoute('episode_show', ['slug' => $episode->getSlug()], Response::HTTP_SEE_OTHER);
-        }
+                return $this->redirectToRoute('episode_show', ['slug' => $episode->getSlug()], Response::HTTP_SEE_OTHER);
+                }
+            }
 
         return $this->renderForm('episode/show.html.twig', [
-            'episode' => $episode,
-            'form'    => $form,
+            'episode'  => $episode,
+            'form'     => $form,
+            'comments' => $comments
         ]);
     }
 

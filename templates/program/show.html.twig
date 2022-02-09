@@ -31,7 +31,7 @@
     <a href="{{ path('program_index') }}">
         Retour à la liste des programmes
     </a>
-    <a href="{{ path('program_edit', {id: program.id}) }}">
-        <button class="btn btn-dark">Editer</button>
-    </a>
+    {% if is_granted("ROLE_ADMIN") or program.owner == app.user %}
+        <a href="{{ path('program_edit', { 'slug': program.slug} ) }}">Éditer</a>
+    {%endif%}
 {% endblock %}

@@ -14,8 +14,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const ADMIN = ['ROLE_ADMIN'];
-    public const CONTRIBUTOR = ['ROLE_CONTRIBUTOR'];
+    public const ADMIN = 'ROLE_ADMIN';
+    public const CONTRIBUTOR = 'ROLE_CONTRIBUTOR';
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -44,9 +44,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $comments;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Program::class, mappedBy="owner")
+     */
+    private $programs;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->programs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -162,6 +168,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($comment->getAuthor() === $this) {
                 $comment->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Program[]
+     */
+    public function getPrograms(): Collection
+    {
+        return $this->programs;
+    }
+
+    public function addProgram(Program $program): self
+    {
+        if (!$this->programs->contains($program)) {
+            $this->programs[] = $program;
+            $program->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProgram(Program $program): self
+    {
+        if ($this->programs->removeElement($program)) {
+            // set the owning side to null (unless already changed)
+            if ($program->getOwner() === $this) {
+                $program->setOwner(null);
             }
         }
 

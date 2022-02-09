@@ -34,9 +34,15 @@
     {% if episode.comments is not empty %}
         <ul>
         {% for comment in episode.comments %}
-            <li>comment.rate</li>
-            <li>comment.comment</li>
-            <li>comment.author.name</li>
+            <li>{{ comment.rate }}</li>
+            <li>{{ comment.comment }}</li>
+            <li>{{ comment.author.email }}</li>
+            {% if is_granted("ROLE_ADMIN") or app.user == comment.author %}
+                <a href="{{ path('comment_edit', {id: comment.id}) }}">Editer</a>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('comment_delete', {id: comment.id}) }}">Supprimer</a>
+            {% endif %}
         {% endfor %}
         </ul>
         {% else %}
